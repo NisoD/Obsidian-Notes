@@ -1,0 +1,7 @@
+- How to categorize the wrongdoing
+- Open ends :
+	- Project 1
+		- The saved file should be the same file that we open as df
+	- Project 2 
+		-  understand what basic functionailites did he expect from the vizualisation
+		- 
