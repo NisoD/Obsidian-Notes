@@ -1,0 +1,168 @@
+# i3 config file (v4)
+
+# Font for window titles and bar (unless overridden in bar block)
+font pango:DejaVu Sans Mono,FontAwesome 12
+
+# Start XDG autostart .desktop files (check /etc/xdg/autostart for unnecessary entries)
+exec --no-startup-id dex --autostart --environment i3
+
+# Automatically start applications on specific workspaces with delay for heavy apps
+# Delayed to reduce initial load; adjust 'sleep' values as needed
+exec_always --no-startup-id sleep 3 && i3-msg 'workspace $ws1; exec /usr/bin/firefox'
+exec_always --no-startup-id i3-msg 'workspace $ws2; exec /usr/bin/kitty --config /home/daniel/.config/kitty/kitty.conf'
+# In your i3 config or startup script
+exec_always --no-startup-id sleep 5 && i3-msg "workspace $ws3; exec kitty --hold tmux"
+
+exec_always --no-startup-id setxkbmap -option caps:escape
+# Screen locking before suspend
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+
+# NetworkManager applet (optional if you manage networks via CLI)
+# Comment out if not needed in tray, since NetworkManager.service runs anyway
+# exec --no-startup-id nm-applet
+
+# PulseAudio volume controls
+set $refresh_i3status killall -SIGUSR1 i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+
+# Directional key mappings (custom hjkl-style)
+set $up l
+set $down k
+set $left j
+set $right semicolon
+
+# Floating window drag with Alt (Mod1)
+floating_modifier Mod1
+
+# Tiling drag with modifier + titlebar
+tiling_drag modifier titlebar
+
+# Start a terminal
+bindsym Mod1+Return exec kitty
+
+# Kill focused window or open nvim in kitty
+bindsym Mod1+Shift+q kill
+bindsym Mod1+n exec kitty nvim
+
+# Start dmenu for app launching
+bindsym Mod1+d exec --no-startup-id dmenu_run
+
+# Change focus with custom directional keys
+bindsym Mod1+$left focus left
+bindsym Mod1+$down focus down
+bindsym Mod1+$up focus up
+bindsym Mod1+$right focus right
+
+# Move focused window
+bindsym Mod1+Shift+$left move left
+bindsym Mod1+Shift+$down move down
+bindsym Mod1+Shift+$up move up
+bindsym Mod1+Shift+$right move right
+
+# Screenshot bindings and clipboard manager
+bindsym Print exec flameshot full
+bindsym Shift+Print exec flameshot gui
+exec --no-startup-id clipmenud
+
+# Split orientations
+bindsym Mod1+h split h
+bindsym Mod1+v split v
+
+# Application shortcuts (Super key = Mod4)
+bindsym Mod4+f exec firefox
+bindsym Mod4+t exec thunar
+bindsym Mod4+e exec nautilus
+bindsym Mod4+Shift+b exec brave
+
+# Fullscreen toggle
+bindsym Mod1+f fullscreen toggle
+
+# Container layouts
+bindsym Mod1+s layout stacking
+bindsym Mod1+w layout tabbed
+bindsym Mod1+e layout toggle split
+
+# Toggle tiling/floating
+bindsym Mod1+Shift+space floating toggle
+
+# Focus tiling/floating windows
+bindsym Mod1+space focus mode_toggle
+
+# Focus parent container
+bindsym Mod1+a focus parent
+
+# Scratchpad controls
+bindsym Mod1+Shift+minus move scratchpad
+bindsym Mod1+minus scratchpad show
+
+# Workspace definitions with icons
+set $ws1 1:
+set $ws2 2:
+set $ws3 3:
+set $ws4 4:
+set $ws5 5:
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+# Switch to workspace
+bindsym Mod1+1 workspace number $ws1
+bindsym Mod1+2 workspace number $ws2
+bindsym Mod1+3 workspace number $ws3
+bindsym Mod1+4 workspace number $ws4
+bindsym Mod1+5 workspace number $ws5
+bindsym Mod1+6 workspace number $ws6
+bindsym Mod1+7 workspace number $ws7
+bindsym Mod1+8 workspace number $ws8
+bindsym Mod1+9 workspace number $ws9
+bindsym Mod1+0 workspace number $ws10
+
+# Move container to workspace
+bindsym Mod1+Shift+1 move container to workspace number $ws1
+bindsym Mod1+Shift+2 move container to workspace number $ws2
+bindsym Mod1+Shift+3 move container to workspace number $ws3
+bindsym Mod1+Shift+4 move container to workspace number $ws4
+bindsym Mod1+Shift+5 move container to workspace number $ws5
+bindsym Mod1+Shift+6 move container to workspace number $ws6
+bindsym Mod1+Shift+7 move container to workspace number $ws7
+bindsym Mod1+Shift+8 move container to workspace number $ws8
+bindsym Mod1+Shift+9 move container to workspace number $ws9
+bindsym Mod1+Shift+0 move container to workspace number $ws10
+
+# Reload, restart, exit
+bindsym Mod1+Shift+c reload
+bindsym Mod1+Shift+r restart
+bindsym Mod1+Shift+e exec "i3-nagbar -t warning -m 'Exit i3? This ends your X session.' -B 'Yes' 'i3-msg exit'"
+
+# Resize mode
+mode "resize" {
+    bindsym $left  resize shrink width 10 px or 10 ppt
+    bindsym $down  resize grow height 10 px or 10 ppt
+    bindsym $up    resize shrink height 10 px or 10 ppt
+    bindsym $right resize grow width 10 px or 10 ppt
+    bindsym Left   resize shrink width 10 px or 10 ppt
+    bindsym Down   resize grow height 10 px or 10 ppt
+    bindsym Up     resize shrink height 10 px or 10 ppt
+    bindsym Right  resize grow width 10 px or 10 ppt
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+    bindsym Mod1+r mode "default"
+}
+bindsym Mod1+r mode "resize"
+
+# Bar configuration
+# Bar configuration - Minimal with only time
+# Bar configuration - Simple with i3status
+bar {
+    status_command i3blocks -c ~/.config/i3blocks/config
+    position top
+    }
+
+bindsym Mod4+space exec --no-startup-id "setxkbmap -layout 'us,il' -option 'grp:win_space_toggle'"
+# Wallpaper
+exec_always --no-startup-id feh --bg-scale /home/daniel/Desktop/wallpaper.jpg

@@ -1,0 +1,64 @@
+# Improve colors
+set -g default-terminal "screen-256color"
+set -ga terminal-overrides ",screen-256color*:Tc"
+
+# Set prefix from C-b to C-a
+unbind C-b
+set-option -g prefix C-a
+bind-key C-a send-prefix
+
+# Remove delay when pressing escape
+set -s escape-time 0
+
+# Start window numbering at 1
+set -g base-index 1
+
+# Status bar styling
+
+# set -g @catppuccin_flavor "mocha"
+set -g @catppuccin_window_status_style "rounded"
+
+# List of plugins
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'christoomey/vim-tmux-navigator'
+set -g @plugin 'catppuccin/tmux#v2.1.0'
+
+set -g status-left ""
+set -g status-right "#{E:@catppuccin_status_application} #{E:@catppuccin_status_session}"
+
+# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
+
+
+# Reload config file with 'r'
+bind r source-file ~/.tmux.conf \; display "Config reloaded!"
+
+# Enable vim mode keys
+set-window-option -g mode-keys vi
+
+# vim-like copy mode
+bind -T copy-mode-vi v send-keys -X begin-selection
+bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel 'xclip -in -selection clipboard'
+
+# vim-like pane switching
+bind -r ^ last-window
+bind -r k select-pane -U
+bind -r j select-pane -D
+bind -r h select-pane -L
+bind -r l select-pane -R
+
+# Smart pane switching with awareness of Vim splits
+is_vim="ps -o state= -o comm= -t '#{pane_tty}' | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?\.?(view|n?vim?x?)(-wrapped)?(diff)?$'"
+
+bind-key -n 'C-h' if-shell "$is_vim" 'send-keys C-h' { if -F '#{pane_at_left}' '' 'select-pane -L' }
+bind-key -n 'C-j' if-shell "$is_vim" 'send-keys C-j' { if -F '#{pane_at_bottom}' '' 'select-pane -D' }
+bind-key -n 'C-k' if-shell "$is_vim" 'send-keys C-k' { if -F '#{pane_at_top}' '' 'select-pane -U' }
+bind-key -n 'C-l' if-shell "$is_vim" 'send-keys C-l' { if -F '#{pane_at_right}' '' 'select-pane -R' }
+
+bind-key -T copy-mode-vi 'C-h' if -F '#{pane_at_left}' '' 'select-pane -L'
+bind-key -T copy-mode-vi 'C-j' if -F '#{pane_at_bottom}' '' 'select-pane -D'
+bind-key -T copy-mode-vi 'C-k' if -F '#{pane_at_top}' '' 'select-pane -U'
+bind-key -T copy-mode-vi 'C-l' if -F '#{pane_at_right}' '' 'select-pane -R'
+
+run '~/.tmux/plugins/tpm/tpm'
+
+set -g status-style bg=default
